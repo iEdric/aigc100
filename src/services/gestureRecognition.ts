@@ -105,41 +105,42 @@ export class GestureRecognitionService {
   }
 
   private classifyFingerGesture(landmarks: any): string {
-    // 基于5个手指单独检测的手势识别逻辑
+    // 基于5个手指单独检测的手势识别逻辑（优化版本）
 
     // 获取每个手指的伸展状态
     const fingerStates = this.getFingerStates(landmarks)
+    const extendedCount = Object.values(fingerStates).filter(Boolean).length
 
-    // 检测单个手指伸展（优先级从拇指到小指）
-    if (fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
-      return FingerGestures.THUMB_UP // 只有拇指伸出 - 向上移动
-    }
-
-    if (fingerStates.indexExtended && !fingerStates.thumbExtended && !fingerStates.middleExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
-      return FingerGestures.INDEX_UP // 只有食指伸出 - 向前移动
-    }
-
-    if (fingerStates.middleExtended && !fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
-      return FingerGestures.MIDDLE_UP // 只有中指伸出 - 向后移动
-    }
-
-    if (fingerStates.ringExtended && !fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.pinkyExtended) {
-      return FingerGestures.RING_UP // 只有无名指伸出 - 向左移动
-    }
-
-    if (fingerStates.pinkyExtended && !fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.ringExtended) {
-      return FingerGestures.PINKY_UP // 只有小指伸出 - 向右移动
+    // 检测张开手掌（优先级最高 - 大部分手指伸出）
+    if (extendedCount >= 3) {
+      return FingerGestures.OPEN_PALM // 张开手掌 - 跳跃
     }
 
     // 检测握拳（所有手指都弯曲）
-    if (!fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
+    if (extendedCount === 0) {
       return FingerGestures.FIST // 握拳 - 停止
     }
 
-    // 检测张开手掌（大部分手指伸出）
-    const extendedCount = Object.values(fingerStates).filter(Boolean).length
-    if (extendedCount >= 4) {
-      return FingerGestures.OPEN_PALM // 张开手掌 - 跳跃
+    // 检测单个主要手指伸展（降低严格程度）
+    const extendedFingers = Object.entries(fingerStates)
+      .filter(([_, extended]) => extended)
+      .map(([finger, _]) => finger)
+
+    // 如果只有一个手指伸出，使用它
+    if (extendedCount === 1) {
+      const finger = extendedFingers[0]
+      switch (finger) {
+        case 'thumbExtended': return FingerGestures.THUMB_UP
+        case 'indexExtended': return FingerGestures.INDEX_UP
+        case 'middleExtended': return FingerGestures.MIDDLE_UP
+        case 'ringExtended': return FingerGestures.RING_UP
+        case 'pinkyExtended': return FingerGestures.PINKY_UP
+      }
+    }
+
+    // 如果有两个手指伸出，优先选择食指
+    if (extendedCount === 2 && fingerStates.indexExtended) {
+      return FingerGestures.INDEX_UP
     }
 
     return FingerGestures.IDLE // 其他情况 - 空闲

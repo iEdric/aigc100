@@ -559,27 +559,18 @@ const getGestureIcon = (gesture: string): string => {
   }
 }
 
-/* ===== 主应用容器 - 极致美学 ===== */
+/* ===== 苹果风格主容器 - 极简优雅 ===== */
 .app {
   min-height: 100vh;
-  background:
-    radial-gradient(ellipse at top left, rgba(102, 126, 234, 0.4) 0%, transparent 50%),
-    radial-gradient(ellipse at top right, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at bottom, rgba(120, 219, 226, 0.2) 0%, transparent 50%),
-    linear-gradient(135deg,
-      #667eea 0%,
-      #764ba2 25%,
-      #f093fb 50%,
-      #f5576c 75%,
-      #4facfe 100%);
-  background-size: 400% 400%;
-  animation: gradient-shift 15s ease infinite;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  transition: all 0.3s ease;
   position: relative;
   overflow-x: hidden;
-  line-height: 1.6;
-  color: #ffffff;
+  line-height: 1.4;
+  color: #1d1d1f;
+  margin: 0;
+  padding: 0;
 }
 
 /* 动态背景粒子效果 */
@@ -624,25 +615,20 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .fullscreen-button {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  border: none;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  color: white;
-  font-size: 22px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  color: #1d1d1f;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: relative;
-  overflow: hidden;
 }
 
 .fullscreen-button::before {
@@ -657,11 +643,9 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .fullscreen-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-2px) scale(1.05);
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .fullscreen-button:hover::before {
@@ -689,19 +673,15 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .panel-content {
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 24px;
-  padding: 20px 24px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
-  gap: 24px;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.3),
-    0 8px 32px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  gap: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
 }
@@ -756,31 +736,17 @@ const getGestureIcon = (gesture: string): string => {
   z-index: 1;
 }
 
-/* ===== 应用头部 - 极致优雅设计 ===== */
+/* ===== 苹果风格头部 - 简洁优雅 ===== */
 .app-header {
-  padding: 3rem 0 2rem;
-  color: white;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-}
-
-.app-header::before {
-  content: '';
-  position: absolute;
+  padding: 20px 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: sticky;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 200px;
-  height: 2px;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    rgba(102, 126, 234, 0.8),
-    rgba(255, 119, 198, 0.8),
-    rgba(255, 255, 255, 0.6),
-    transparent);
-  border-radius: 1px;
-  opacity: 0.8;
+  z-index: 100;
+  color: #1d1d1f;
 }
 
 .app-header.hidden {
@@ -807,68 +773,36 @@ const getGestureIcon = (gesture: string): string => {
 .logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 28px;
-  font-weight: 800;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  transition: all 0.3s ease;
-  cursor: default;
-}
-
-.logo:hover {
-  transform: scale(1.05);
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #1d1d1f;
+  letter-spacing: -0.5px;
 }
 
 .logo-icon {
-  font-size: 36px;
-  animation: bounce-in 0.8s ease-out, pulse-glow 3s ease-in-out infinite;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
-  background: linear-gradient(135deg, #ffd700, #ffed4e);
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  font-size: 24px;
+  color: #0071e3;
 }
 
 .logo-text {
-  background: linear-gradient(135deg,
-    #ffffff 0%,
-    #e0e7ff 25%,
-    #f0abfc 50%,
-    #fce7f3 75%,
-    #ffffff 100%);
-  background-size: 200% 200%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 4s ease infinite;
-  letter-spacing: 1px;
+  font-weight: 600;
+  color: #1d1d1f;
 }
 
 .title {
   margin: 0;
-  font-size: 3.5rem;
-  font-weight: 900;
+  font-size: 2.5rem;
+  font-weight: 800;
   text-align: center;
   flex: 1;
   line-height: 1.1;
   text-shadow:
-    0 0 40px rgba(255, 255, 255, 0.3),
-    0 4px 20px rgba(0, 0, 0, 0.4),
-    0 8px 40px rgba(102, 126, 234, 0.2);
-  background: linear-gradient(135deg,
-    #ffffff 0%,
-    #dbeafe 20%,
-    #fce7f3 40%,
-    #fef3c7 60%,
-    #ecfdf5 80%,
-    #ffffff 100%);
-  background-size: 300% 300%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: gradient-shift 6s ease infinite, pulse-glow 4s ease-in-out infinite;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+    0 0 30px rgba(255, 255, 255, 0.3),
+    0 2px 10px rgba(0, 0, 0, 0.3),
+    0 4px 20px rgba(102, 126, 234, 0.2);
+  color: #1d1d1f;
+  letter-spacing: -1px;
 }
 
 .status-section {
@@ -881,44 +815,15 @@ const getGestureIcon = (gesture: string): string => {
 .status-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.status-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(255, 119, 198, 0.1) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  transition: all 0.2s ease;
 }
 
 .status-item:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.status-item:hover::before {
-  opacity: 1;
+  background: rgba(0, 0, 0, 0.08);
 }
 
 .status-label {
@@ -947,20 +852,22 @@ const getGestureIcon = (gesture: string): string => {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* ===== 主内容区域 - 流畅布局 ===== */
+/* ===== 苹果风格主内容 - 优雅布局 ===== */
 .app-main {
-  max-width: 1600px;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 80px 40px;
   display: grid;
   grid-template-columns: 480px 1fr;
-  gap: 2rem;
-  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 80px;
+  transition: all 0.3s ease;
+  align-items: start;
 }
 
 .app-main.fullscreen-main {
-  padding: 1.5rem;
-  grid-template-columns: 420px 1fr;
+  padding: 40px;
+  grid-template-columns: 400px 1fr;
+  gap: 60px;
 }
 
 /* ===== 控制区域 - 优雅分组 ===== */
@@ -976,69 +883,41 @@ const getGestureIcon = (gesture: string): string => {
   transform: translateX(-30px) scale(0.95);
 }
 
-/* ===== 超级卡片系统 - 玻璃态设计 ===== */
+/* ===== 苹果风格卡片系统 ===== */
 .mode-card,
 .player-card,
 .status-card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    0 2px 16px rgba(0, 0, 0, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    0 2px 10px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
   animation: fadeInUp 0.8s ease-out;
   position: relative;
   overflow: hidden;
 }
 
-.mode-card::before,
-.player-card::before,
-.status-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(255, 119, 198, 0.05) 50%,
-    rgba(120, 219, 226, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: -1;
-}
-
 .mode-card:hover,
 .player-card:hover {
-  transform: translateY(-8px) scale(1.02);
+  transform: translateY(-4px);
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.12),
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-.mode-card:hover::before,
-.player-card:hover::before {
-  opacity: 1;
+    0 8px 25px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .mode-card:active,
 .player-card:active {
-  transform: translateY(-4px) scale(0.98);
+  transform: translateY(-2px);
 }
 
-/* ===== 卡片头部 - 个性化设计 ===== */
+/* ===== 卡片头部 - 紧凑个性化设计 ===== */
 .card-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 24px 28px 0;
+  gap: 12px;
+  padding: 24px 24px 0;
   margin-bottom: 20px;
   position: relative;
 }
@@ -1047,88 +926,55 @@ const getGestureIcon = (gesture: string): string => {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 28px;
-  right: 28px;
+  left: 24px;
+  right: 24px;
   height: 1px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.3) 20%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0.3) 80%,
-    transparent 100%);
-  border-radius: 0.5px;
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .player-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 16px;
-  background: linear-gradient(135deg,
-    #667eea 0%,
-    #764ba2 25%,
-    #f093fb 50%,
-    #f5576c 75%,
-    #4facfe 100%);
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  font-weight: 700;
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.15),
-    0 4px 12px rgba(102, 126, 234, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  position: relative;
-  z-index: 1;
-}
-
-.player-avatar::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(135deg,
-    rgba(255, 255, 255, 0.3) 0%,
-    rgba(102, 126, 234, 0.2) 100%);
-  border-radius: 18px;
-  z-index: -1;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1d1d1f;
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .player-title {
   margin: 0;
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
+  color: #1d1d1f;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
 }
 
 .card-title {
   margin: 0 0 20px 0;
-  color: white;
+  color: #1d1d1f;
   font-size: 20px;
   font-weight: 700;
   text-align: center;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   position: relative;
   z-index: 1;
+  letter-spacing: -0.5px;
 }
 
 .card-title::before {
   content: '🎮';
-  margin-right: 12px;
-  font-size: 24px;
+  margin-right: 8px;
+  font-size: 20px;
   vertical-align: middle;
 }
 
-/* ===== 卡片内容 - 精致布局 ===== */
+/* ===== 苹果风格卡片内容 ===== */
 .card-content {
-  padding: 0 28px 28px;
+  padding: 0 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -1136,104 +982,43 @@ const getGestureIcon = (gesture: string): string => {
   z-index: 1;
 }
 
-/* ===== 模式选择器 - 交互式设计 ===== */
+/* ===== 苹果风格模式选择器 ===== */
 .mode-selector {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: 16px;
 }
 
 .mode-button {
   padding: 20px 16px;
-  border: 2px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(15px);
-  -webkit-backdrop-filter: blur(15px);
-  color: white;
-  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #ffffff;
+  color: #1d1d1f;
+  border-radius: 12px;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
   text-align: center;
   position: relative;
-  overflow: hidden;
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.mode-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    rgba(255, 119, 198, 0.1) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: -1;
-}
-
-.mode-button::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s ease, height 0.6s ease;
-  z-index: -1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .mode-button:hover {
-  transform: translateY(-4px) scale(1.02);
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.4);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    0 4px 16px rgba(102, 126, 234, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.mode-button:hover::before {
-  opacity: 1;
-}
-
-.mode-button:active::after {
-  width: 200px;
-  height: 200px;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .mode-button.active {
-  background: linear-gradient(135deg,
-    #667eea 0%,
-    #764ba2 25%,
-    #f093fb 50%,
-    #f5576c 75%,
-    #4facfe 100%);
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow:
-    0 8px 32px rgba(102, 126, 234, 0.3),
-    0 4px 16px rgba(255, 119, 198, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px);
-}
-
-.mode-button.active::before {
-  opacity: 0.5;
+  background: #0071e3;
+  color: white;
+  border-color: #0071e3;
+  box-shadow: 0 4px 16px rgba(0, 113, 227, 0.3);
 }
 
 .mode-icon {
@@ -1256,21 +1041,15 @@ const getGestureIcon = (gesture: string): string => {
   z-index: 1;
 }
 
-/* ===== 功能区域 - 精致模块设计 ===== */
+/* ===== 苹果风格功能区域 ===== */
 .camera-section,
 .gesture-section {
-  background: rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 16px;
-  padding: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
 }
 
 .camera-section::before,
@@ -1332,20 +1111,11 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .camera-wrapper {
-  border-radius: 12px;
+  border-radius: 8px;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow:
-    0 4px 16px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
-}
-
-.camera-wrapper:hover {
-  box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 /* ===== 手势显示 - 动态视觉反馈 ===== */
@@ -1360,8 +1130,8 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .gesture-icon-large {
-  font-size: 56px;
-  margin-bottom: 12px;
+  font-size: 48px;
+  margin-bottom: 10px;
   animation: bounce-in 0.6s ease-out, float 3s ease-in-out infinite;
   filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.3));
   background: linear-gradient(135deg,
@@ -1382,14 +1152,11 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .gesture-name {
-  color: white;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  position: relative;
-  z-index: 1;
+  color: #1d1d1f;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: -0.2px;
 }
 
 .gesture-name::after {
@@ -1406,70 +1173,38 @@ const getGestureIcon = (gesture: string): string => {
   border-radius: 1px;
 }
 
-/* ===== 置信度条 - 炫酷进度指示器 ===== */
+/* ===== 苹果风格置信度条 ===== */
 .confidence-bar {
   width: 100%;
   position: relative;
 }
 
 .confidence-label {
-  color: rgba(255, 255, 255, 0.8);
+  color: #86868b;
   font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-  letter-spacing: 0.5px;
 }
 
 .confidence-fill {
-  height: 16px;
-  background: linear-gradient(90deg,
-    #ff4757 0%,
-    #ffa726 25%,
-    #ffeb3b 50%,
-    #4caf50 75%,
-    #2196f3 100%);
-  background-size: 200% 200%;
-  animation: gradient-shift 2s ease infinite;
-  border-radius: 8px;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
   position: relative;
   overflow: hidden;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
 }
 
 .confidence-fill::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
-  width: 100%;
+  left: 0;
   height: 100%;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.4) 30%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(255, 255, 255, 0.4) 70%,
-    transparent 100%);
-  animation: shimmer 2s infinite;
-}
-
-.confidence-fill::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  width: 6px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  transform: translateY(-50%);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
-  animation: pulse 1.5s ease-in-out infinite;
+  background: #0071e3;
+  border-radius: 4px;
+  transition: width 0.3s ease;
 }
 
 .confidence-text {
@@ -1477,50 +1212,21 @@ const getGestureIcon = (gesture: string): string => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  color: white;
-  font-size: 11px;
-  font-weight: 800;
-  text-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.8),
-    0 0 8px rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.5px;
+  color: #1d1d1f;
+  font-size: 10px;
+  font-weight: 600;
   z-index: 1;
 }
 
-/* ===== 状态卡片 - 优雅的状态反馈 ===== */
+/* ===== 苹果风格状态卡片 ===== */
 .status-card {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 20px;
-  padding: 24px;
+  background: #f5f5f7;
+  border-radius: 12px;
+  padding: 20px;
   text-align: center;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   animation: fadeInUp 0.8s ease-out;
   position: relative;
-  overflow: hidden;
-}
-
-.status-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.05) 0%,
-    rgba(255, 119, 198, 0.05) 100%);
-  opacity: 0;
-  transition: opacity 0.4s ease;
-  z-index: -1;
-}
-
-.status-card:hover::before {
-  opacity: 1;
 }
 
 .status-icon {
@@ -1577,7 +1283,7 @@ const getGestureIcon = (gesture: string): string => {
   }
 }
 
-/* ===== 游戏区域 - 沉浸式竞技场 ===== */
+/* ===== 苹果风格游戏区域 ===== */
 .game-section {
   display: flex;
   flex-direction: column;
@@ -1585,75 +1291,36 @@ const getGestureIcon = (gesture: string): string => {
 }
 
 .arena-container {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(25px);
-  -webkit-backdrop-filter: blur(25px);
-  border-radius: 24px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.1),
-    0 4px 16px rgba(0, 0, 0, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   animation: fadeInUp 1s ease-out;
   position: relative;
 }
 
-.arena-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg,
-    rgba(102, 126, 234, 0.03) 0%,
-    rgba(255, 119, 198, 0.03) 50%,
-    rgba(120, 219, 226, 0.03) 100%);
-  z-index: -1;
-}
-
 .arena-header-bar {
-  background: rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(20px);
-  padding: 20px 28px;
+  background: #f5f5f7;
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
-}
-
-.arena-header-bar::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(90deg,
-    rgba(102, 126, 234, 0.1) 0%,
-    transparent 20%,
-    transparent 80%,
-    rgba(255, 119, 198, 0.1) 100%);
-  z-index: -1;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .arena-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: white;
-  font-size: 20px;
-  font-weight: 700;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-  letter-spacing: 0.5px;
+  gap: 8px;
+  color: #1d1d1f;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
 }
 
 .arena-icon {
-  font-size: 28px;
-  animation: pulse-glow 3s ease-in-out infinite;
-  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+  font-size: 20px;
 }
 
 .arena-stats {
@@ -1719,47 +1386,73 @@ const getGestureIcon = (gesture: string): string => {
 @media (max-width: 1400px) {
   .app-main {
     grid-template-columns: 400px 1fr;
-    gap: 1.5rem;
+    gap: 60px;
+    padding: 60px 40px;
+  }
+
+  .title {
+    font-size: 28px;
   }
 }
 
 @media (max-width: 1200px) {
   .app-main {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 60px;
+    padding: 60px 40px;
   }
 
   .control-section {
     flex-direction: row;
     flex-wrap: wrap;
+    gap: 40px;
   }
 
   .player-card {
     min-width: 300px;
+    flex: 1;
   }
 
   .mode-selector {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .title {
+    font-size: 26px;
   }
 }
 
 @media (max-width: 768px) {
   .app-main {
-    padding: 1rem;
+    padding: 0.5rem;
+    gap: 1rem;
   }
 
   .control-section {
     flex-direction: column;
+    gap: 1rem;
   }
 
   .header-content {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     text-align: center;
+    padding: 0 0.5rem;
   }
 
   .title {
-    font-size: 2rem;
+    font-size: 1.8rem;
+  }
+
+  .card-header,
+  .card-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .card-content {
+    padding-bottom: 16px;
   }
 
   .floating-panel {
@@ -1783,21 +1476,56 @@ const getGestureIcon = (gesture: string): string => {
 
 @media (max-width: 480px) {
   .app-main {
-    padding: 0.5rem;
+    padding: 0.3rem;
+    gap: 0.8rem;
+  }
+
+  .app-header {
+    padding: 1rem 0 0.8rem;
   }
 
   .title {
     font-size: 1.5rem;
+    letter-spacing: 0.5px;
   }
 
   .arena-header-bar {
-    padding: 12px 16px;
+    padding: 10px 12px;
+  }
+
+  .arena-title {
+    font-size: 16px;
   }
 
   .card-header,
   .card-content {
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .card-content {
+    padding-bottom: 12px;
+    gap: 12px;
+  }
+
+  .camera-section,
+  .gesture-section {
+    padding: 12px;
+  }
+
+  .gesture-icon-large {
+    font-size: 36px;
+  }
+
+  .floating-panel {
+    bottom: 8px;
+    left: 8px;
+    right: 8px;
+  }
+
+  .fullscreen-controls {
+    top: 12px;
+    right: 12px;
   }
 }
 </style>
