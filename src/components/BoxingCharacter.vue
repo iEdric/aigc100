@@ -4,16 +4,11 @@
 
     <div class="character-info">
       <div class="character-name">{{ characterName }}</div>
-      <div class="character-health">
-        <div class="health-label">生命值</div>
-        <div class="health-bar">
-          <div
-            class="health-fill"
-            :style="{ width: health + '%' }"
-            :class="{ 'low-health': health < 30 }"
-          ></div>
+      <div class="character-position">
+        <div class="position-label">位置</div>
+        <div class="position-display">
+          X: {{ Math.round(position.x) }}, Y: {{ Math.round(position.y) }}
         </div>
-        <div class="health-text">{{ Math.round(health) }}%</div>
       </div>
     </div>
 
@@ -28,15 +23,13 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 
 interface Props {
   characterName?: string
-  health?: number
   position?: { x: number; y: number; z: number }
   action?: string
   color?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  characterName: '拳击手',
-  health: 100,
+  characterName: '角色',
   position: () => ({ x: 0, y: 0, z: 0 }),
   action: 'idle',
   color: '#ff6b6b'
@@ -44,34 +37,35 @@ const props = withDefaults(defineProps<Props>(), {
 
 const canvasRef = ref<HTMLDivElement>()
 const currentAction = ref<string>('待机')
+const position = ref({ x: 0, y: 0, z: 0 })
 let scene: any = null
 let renderer: any = null
 let camera: any = null
 let character: any = null
 let animationId: number | null = null
 
-  // 拳击动作枚举
-  const BoxingActions = {
-    IDLE: 'idle',
-    JAB: 'jab',
-    CROSS: 'cross',
-    HOOK: 'hook',
-    UPPERCUT: 'uppercut',
-    BLOCK: 'block',
-    HIT: 'hit',
-    KO: 'ko'
-  }
+// 手指控制动作枚举
+const FingerActions = {
+  IDLE: 'idle',
+  THUMB_UP: 'thumb_up',
+  INDEX_UP: 'index_up',
+  MIDDLE_UP: 'middle_up',
+  RING_UP: 'ring_up',
+  PINKY_UP: 'pinky_up',
+  FIST: 'fist',
+  OPEN_PALM: 'open_palm'
+}
 
 // 动作映射到显示名称
 const actionDisplayNames: Record<string, string> = {
-  [BoxingActions.IDLE]: '待机',
-  [BoxingActions.JAB]: '直拳',
-  [BoxingActions.CROSS]: '交叉拳',
-  [BoxingActions.HOOK]: '勾拳',
-  [BoxingActions.UPPERCUT]: '上勾拳',
-  [BoxingActions.BLOCK]: '格挡',
-  [BoxingActions.HIT]: '被击中',
-  [BoxingActions.KO]: '击倒'
+  [FingerActions.IDLE]: '待机',
+  [FingerActions.THUMB_UP]: '向上移动',
+  [FingerActions.INDEX_UP]: '向前移动',
+  [FingerActions.MIDDLE_UP]: '向后移动',
+  [FingerActions.RING_UP]: '向左移动',
+  [FingerActions.PINKY_UP]: '向右移动',
+  [FingerActions.FIST]: '停止',
+  [FingerActions.OPEN_PALM]: '跳跃'
 }
 
 const initializeThreeJS = async () => {
@@ -201,6 +195,10 @@ const animate = () => {
   // 只有当组件可见时才更新动画
   if (character && isVisible()) {
     updateAnimation()
+    // 更新位置显示
+    position.value.x = character.position.x
+    position.value.y = character.position.y
+    position.value.z = character.position.z
     renderer.render(scene, camera)
   }
 }
@@ -219,30 +217,46 @@ const updateAnimation = () => {
   const time = Date.now() * 0.001
 
   switch (props.action) {
-    case BoxingActions.JAB:
-      // 直拳动画 - 右手向前伸
-      character.children[3].rotation.z = -Math.PI / 3 + Math.sin(time * 10) * 0.2
+    case FingerActions.THUMB_UP:
+      // 向上移动动画 - 身体向上倾斜
+      character.rotation.x = -Math.PI / 6
+      character.position.y = Math.sin(time * 8) * 2
       break
-    case BoxingActions.CROSS:
-      // 交叉拳动画 - 左手向前伸
-      character.children[2].rotation.z = Math.PI / 3 + Math.sin(time * 10) * 0.2
+    case FingerActions.INDEX_UP:
+      // 向前移动动画 - 身体向前倾
+      character.rotation.x = Math.PI / 12
+      character.position.z = Math.sin(time * 8) * 1
       break
-    case BoxingActions.HOOK:
-      // 勾拳动画 - 手臂旋转
-      character.children[3].rotation.x = Math.sin(time * 8) * 0.5
+    case FingerActions.MIDDLE_UP:
+      // 向后移动动画 - 身体向后倾
+      character.rotation.x = -Math.PI / 12
+      character.position.z = -Math.sin(time * 8) * 1
       break
-    case BoxingActions.BLOCK:
-      // 格挡动画 - 手臂抬起
-      character.children[2].rotation.z = Math.PI / 2
-      character.children[3].rotation.z = -Math.PI / 2
+    case FingerActions.RING_UP:
+      // 向左移动动画 - 身体向左倾
+      character.rotation.z = Math.PI / 8
+      character.position.x = -Math.sin(time * 8) * 1
       break
-    case BoxingActions.HIT:
-      // 被击中动画 - 身体后仰
-      character.rotation.z = Math.sin(time * 15) * 0.1
+    case FingerActions.PINKY_UP:
+      // 向右移动动画 - 身体向右倾
+      character.rotation.z = -Math.PI / 8
+      character.position.x = Math.sin(time * 8) * 1
+      break
+    case FingerActions.OPEN_PALM:
+      // 跳跃动画 - 身体向上跳起
+      const jumpProgress = Math.sin(time * 6)
+      character.position.y = Math.abs(jumpProgress) * 8
+      character.rotation.x = jumpProgress * Math.PI / 8
+      break
+    case FingerActions.FIST:
+      // 停止动画 - 身体稳定
+      character.rotation.set(0, 0, 0)
+      character.position.y = 0
       break
     default:
-      // 待机动画 - 轻微摆动
-      character.rotation.y = Math.sin(time * 2) * 0.05
+      // 待机动画 - 轻微呼吸效果
+      character.rotation.y = Math.sin(time * 2) * 0.02
+      character.position.y = Math.sin(time * 3) * 0.5
   }
 }
 
@@ -330,45 +344,28 @@ onUnmounted(() => {
   margin-bottom: 0.75rem;
 }
 
-.character-health {
+.character-position {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.5rem;
 }
 
-.health-label {
+.position-label {
   font-size: 0.9rem;
   color: #666;
   min-width: 50px;
 }
 
-.health-bar {
+.position-display {
   flex: 1;
-  height: 12px;
-  background: #e9ecef;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.health-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #28a745 0%, #ffc107 50%, #dc3545 100%);
-  border-radius: 6px;
-  transition: width 0.3s ease;
-}
-
-.health-fill.low-health {
-  background: linear-gradient(90deg, #dc3545 0%, #6c757d 100%);
-}
-
-.health-text {
   font-size: 0.9rem;
-  font-weight: bold;
-  color: #333;
-  min-width: 40px;
-  text-align: right;
+  font-weight: 600;
+  color: #007bff;
+  background: rgba(0, 123, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 8px;
+  text-align: center;
 }
 
 .character-status {

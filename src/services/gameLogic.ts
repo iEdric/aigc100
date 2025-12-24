@@ -1,80 +1,70 @@
-// 拳击比赛游戏逻辑服务
+// 手指控制游戏逻辑服务
 
-export interface Player {
+export interface Character {
   id: string
   name: string
-  health: number
-  score: number
+  x: number // 水平位置 (-100 到 100)
+  y: number // 垂直位置 (-100 到 100)
   action: string
-  isBlocking: boolean
-  comboCount: number
   lastActionTime: number
+  isJumping: boolean
+  jumpStartTime: number
 }
 
 export interface GameState {
-  players: [Player, Player]
-  currentRound: number
-  totalRounds: number
-  roundTime: number
-  timeRemaining: number
-  isMatchRunning: boolean
+  characters: [Character, Character]
+  isGameRunning: boolean
   isPaused: boolean
-  winner: string | null
+  currentRound?: number
+  totalRounds?: number
+  roundTime?: number
+  timeRemaining?: number
 }
 
 export enum GameEvents {
-  MATCH_START = 'match_start',
-  MATCH_END = 'match_end',
-  ROUND_START = 'round_start',
-  ROUND_END = 'round_end',
-  HIT_LANDED = 'hit_landed',
-  BLOCK_SUCCESS = 'block_success',
-  PLAYER_DAMAGED = 'player_damaged',
-  SCORE_UPDATE = 'score_update'
+  CHARACTER_MOVE = 'character_move',
+  CHARACTER_JUMP = 'character_jump',
+  CHARACTER_STOP = 'character_stop',
+  GAME_START = 'game_start',
+  GAME_END = 'game_end'
 }
 
 export class GameLogicService {
   private gameState: GameState
   private eventListeners: Map<GameEvents, Function[]> = new Map()
-  private timerInterval: number | null = null
-  private aiActionInterval: number | null = null
+  private animationFrame: number | null = null
 
   constructor() {
     this.gameState = this.createInitialGameState()
   }
 
   private createInitialGameState(): GameState {
-    const player1: Player = {
-      id: 'player1',
-      name: '玩家',
-      health: 100,
-      score: 0,
+    const character1: Character = {
+      id: 'character1',
+      name: '玩家1',
+      x: -50,
+      y: 0,
       action: 'idle',
-      isBlocking: false,
-      comboCount: 0,
-      lastActionTime: Date.now()
+      lastActionTime: Date.now(),
+      isJumping: false,
+      jumpStartTime: 0
     }
 
-    const player2: Player = {
-      id: 'player2',
-      name: 'AI对手',
-      health: 100,
-      score: 0,
+    const character2: Character = {
+      id: 'character2',
+      name: '玩家2',
+      x: 50,
+      y: 0,
       action: 'idle',
-      isBlocking: false,
-      comboCount: 0,
-      lastActionTime: Date.now()
+      lastActionTime: Date.now(),
+      isJumping: false,
+      jumpStartTime: 0
     }
 
     return {
-      players: [player1, player2],
-      currentRound: 1,
-      totalRounds: 3,
-      roundTime: 180, // 3分钟
-      timeRemaining: 180,
-      isMatchRunning: false,
-      isPaused: false,
-      winner: null
+      characters: [character1, character2],
+      isGameRunning: false,
+      isPaused: false
     }
   }
 
@@ -103,258 +93,132 @@ export class GameLogicService {
     }
   }
 
-  // 比赛控制
-  startMatch(): void {
-    if (this.gameState.isMatchRunning) return
+  // 游戏控制
+  startGame(): void {
+    if (this.gameState.isGameRunning) return
 
-    this.resetGameState()
-    this.gameState.isMatchRunning = true
+    this.resetGame()
+    this.gameState.isGameRunning = true
     this.gameState.isPaused = false
 
-    this.emit(GameEvents.MATCH_START)
-    this.startRoundTimer()
-    this.startAI()
+    this.emit(GameEvents.GAME_START)
+    this.startGameLoop()
   }
 
-  pauseMatch(): void {
-    if (!this.gameState.isMatchRunning) return
-
+  pauseGame(): void {
     this.gameState.isPaused = !this.gameState.isPaused
 
     if (this.gameState.isPaused) {
-      this.stopRoundTimer()
-      this.stopAI()
+      this.stopGameLoop()
     } else {
-      this.startRoundTimer()
-      this.startAI()
+      this.startGameLoop()
     }
   }
 
-  resetMatch(): void {
-    this.stopRoundTimer()
-    this.stopAI()
+  resetGame(): void {
+    this.stopGameLoop()
     this.gameState = this.createInitialGameState()
-    this.emit(GameEvents.MATCH_END, { winner: null, reset: true })
+    this.emit(GameEvents.GAME_END, { reset: true })
   }
 
-  private resetGameState(): void {
-    this.gameState.players[0].health = 100
-    this.gameState.players[0].score = 0
-    this.gameState.players[0].comboCount = 0
+  private startGameLoop(): void {
+    if (this.animationFrame) return
 
-    this.gameState.players[1].health = 100
-    this.gameState.players[1].score = 0
-    this.gameState.players[1].comboCount = 0
+    const gameLoop = () => {
+      if (!this.gameState.isPaused) {
+        this.updateCharacters()
+      }
+      this.animationFrame = requestAnimationFrame(gameLoop)
+    }
 
-    this.gameState.currentRound = 1
-    this.gameState.timeRemaining = this.gameState.roundTime
-    this.gameState.winner = null
+    this.animationFrame = requestAnimationFrame(gameLoop)
   }
 
-  // 计时器管理
-  private startRoundTimer(): void {
-    this.stopRoundTimer()
+  private stopGameLoop(): void {
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame)
+      this.animationFrame = null
+    }
+  }
 
-    this.timerInterval = window.setInterval(() => {
-      if (!this.gameState.isPaused && this.gameState.timeRemaining > 0) {
-        this.gameState.timeRemaining--
+  private updateCharacters(): void {
+    const now = Date.now()
 
-        if (this.gameState.timeRemaining <= 0) {
-          this.endRound()
+    this.gameState.characters.forEach((character, index) => {
+      // 处理跳跃动画
+      if (character.isJumping) {
+        const jumpDuration = now - character.jumpStartTime
+        const jumpHeight = Math.sin((jumpDuration / 1000) * Math.PI) * 30 // 跳跃高度
+
+        if (jumpDuration > 1000) { // 跳跃持续1秒
+          character.isJumping = false
+          character.y = 0
+          character.action = 'idle'
+        } else {
+          character.y = jumpHeight
         }
       }
-    }, 1000)
+    })
   }
 
-  private stopRoundTimer(): void {
-    if (this.timerInterval) {
-      clearInterval(this.timerInterval)
-      this.timerInterval = null
-    }
-  }
 
-  private endRound(): void {
-    this.emit(GameEvents.ROUND_END, { round: this.gameState.currentRound })
 
-    if (this.gameState.currentRound < this.gameState.totalRounds) {
-      // 开始下一回合
-      this.gameState.currentRound++
-      this.gameState.timeRemaining = this.gameState.roundTime
-      this.startRoundTimer()
-      this.emit(GameEvents.ROUND_START, { round: this.gameState.currentRound })
-    } else {
-      // 比赛结束
-      this.endMatch()
-    }
-  }
+  // 角色动作处理
+  setCharacterAction(characterIndex: number, action: string): void {
+    if (characterIndex < 0 || characterIndex >= this.gameState.characters.length) return
 
-  private endMatch(): void {
-    this.stopRoundTimer()
-    this.stopAI()
-    this.gameState.isMatchRunning = false
-
-    // 确定获胜者
-    const [player1, player2] = this.gameState.players
-    let winner: string
-
-    if (player1.score > player2.score) {
-      winner = player1.name
-    } else if (player2.score > player1.score) {
-      winner = player2.name
-    } else {
-      winner = '平局'
-    }
-
-    this.gameState.winner = winner
-    this.emit(GameEvents.MATCH_END, { winner })
-  }
-
-  // AI对手逻辑
-  private startAI(): void {
-    this.stopAI()
-
-    this.aiActionInterval = window.setInterval(() => {
-      if (!this.gameState.isPaused && this.gameState.isMatchRunning) {
-        this.updateAIAction()
-      }
-    }, 1000 + Math.random() * 2000) // 1-3秒随机间隔
-  }
-
-  private stopAI(): void {
-    if (this.aiActionInterval) {
-      clearInterval(this.aiActionInterval)
-      this.aiActionInterval = null
-    }
-  }
-
-  private updateAIAction(): void {
-    // const aiPlayer = this.gameState.players[1]
-    const humanPlayer = this.gameState.players[0]
-
-    // AI决策逻辑
-    const actions = ['jab', 'cross', 'hook', 'uppercut', 'block']
-    const randomAction = actions[Math.floor(Math.random() * actions.length)]
-
-    // 简单的AI策略：如果玩家在攻击，就有一定概率格挡
-    if (humanPlayer.action !== 'idle' && humanPlayer.action !== 'block') {
-      if (Math.random() < 0.4) { // 40%概率格挡
-        this.setPlayerAction(1, 'block')
-        return
-      }
-    }
-
-    // 随机选择攻击动作
-    this.setPlayerAction(1, randomAction)
-
-    // 30%概率在攻击后立即返回idle
-    setTimeout(() => {
-      if (Math.random() < 0.3) {
-        this.setPlayerAction(1, 'idle')
-      }
-    }, 500)
-  }
-
-  // 玩家动作处理
-  setPlayerAction(playerIndex: number, action: string): void {
-    if (playerIndex < 0 || playerIndex >= this.gameState.players.length) return
-
-    const player = this.gameState.players[playerIndex]
+    const character = this.gameState.characters[characterIndex]
     const now = Date.now()
 
     // 防止动作切换过于频繁
-    if (now - player.lastActionTime < 200) return
+    if (now - character.lastActionTime < 100) return
 
-    player.action = action
-    player.isBlocking = action === 'block'
-    player.lastActionTime = now
+    character.action = action
+    character.lastActionTime = now
 
-    // 检查击中判定
-    if (this.isAttackAction(action) && this.gameState.isMatchRunning && !this.gameState.isPaused) {
-      this.checkHit(playerIndex, action)
+    // 处理不同的手指动作
+    switch (action) {
+      case 'thumb_up':
+        this.moveCharacter(characterIndex, 0, -5) // 向上移动
+        this.emit(GameEvents.CHARACTER_MOVE, { character: character.id, direction: 'up' })
+        break
+      case 'index_up':
+        this.moveCharacter(characterIndex, 0, 5) // 向前移动 (屏幕坐标)
+        this.emit(GameEvents.CHARACTER_MOVE, { character: character.id, direction: 'forward' })
+        break
+      case 'middle_up':
+        this.moveCharacter(characterIndex, 0, -5) // 向后移动 (屏幕坐标)
+        this.emit(GameEvents.CHARACTER_MOVE, { character: character.id, direction: 'backward' })
+        break
+      case 'ring_up':
+        this.moveCharacter(characterIndex, -5, 0) // 向左移动
+        this.emit(GameEvents.CHARACTER_MOVE, { character: character.id, direction: 'left' })
+        break
+      case 'pinky_up':
+        this.moveCharacter(characterIndex, 5, 0) // 向右移动
+        this.emit(GameEvents.CHARACTER_MOVE, { character: character.id, direction: 'right' })
+        break
+      case 'fist':
+        character.action = 'idle'
+        this.emit(GameEvents.CHARACTER_STOP, { character: character.id })
+        break
+      case 'open_palm':
+        if (!character.isJumping) {
+          character.isJumping = true
+          character.jumpStartTime = now
+          character.action = 'jump'
+          this.emit(GameEvents.CHARACTER_JUMP, { character: character.id })
+        }
+        break
     }
   }
 
-  private isAttackAction(action: string): boolean {
-    return ['jab', 'cross', 'hook', 'uppercut'].includes(action)
-  }
+  private moveCharacter(characterIndex: number, deltaX: number, deltaY: number): void {
+    const character = this.gameState.characters[characterIndex]
 
-  private checkHit(attackerIndex: number, attackType: string): void {
-    const attacker = this.gameState.players[attackerIndex]
-    const defenderIndex = 1 - attackerIndex
-    const defender = this.gameState.players[defenderIndex]
-
-    if (!attacker || !defender) return
-
-    // 如果防守方在格挡，有一定概率挡住攻击
-    if (defender.isBlocking) {
-      const blockChance = this.getBlockChance(attackType)
-      if (Math.random() < blockChance) {
-        this.emit(GameEvents.BLOCK_SUCCESS, {
-          blocker: defender.id,
-          attackType
-        })
-        return
-      }
-    }
-
-    // 计算伤害
-    const baseDamage = this.getAttackDamage(attackType)
-    const damage = Math.floor(baseDamage * (0.8 + Math.random() * 0.4)) // 80%-120%的随机伤害
-
-    // 应用伤害
-    defender.health = Math.max(0, defender.health - damage)
-
-    // 增加连击计数和得分
-    attacker.comboCount++
-    const scoreGain = Math.min(attacker.comboCount * 10, 50) // 连击奖励，最多50分
-    attacker.score += scoreGain
-
-    this.emit(GameEvents.HIT_LANDED, {
-      attacker: attacker.id,
-      defender: defender.id,
-      attackType,
-      damage,
-      scoreGain,
-      comboCount: attacker.comboCount
-    })
-
-    this.emit(GameEvents.PLAYER_DAMAGED, {
-      player: defender.id,
-      damage,
-      newHealth: defender.health
-    })
-
-    this.emit(GameEvents.SCORE_UPDATE, {
-      player: attacker.id,
-      newScore: attacker.score
-    })
-
-    // 检查是否击倒
-    if (defender.health <= 0) {
-      this.endMatch()
-    }
-  }
-
-  private getBlockChance(attackType: string): number {
-    // 不同攻击类型的格挡成功率
-    const blockChances: Record<string, number> = {
-      'jab': 0.6,      // 直拳较容易格挡
-      'cross': 0.5,    // 交叉拳中等难度
-      'hook': 0.4,     // 勾拳较难格挡
-      'uppercut': 0.3  // 上勾拳最难格挡
-    }
-    return blockChances[attackType] || 0.5
-  }
-
-  private getAttackDamage(attackType: string): number {
-    // 不同攻击类型的基准伤害
-    const damages: Record<string, number> = {
-      'jab': 8,        // 直拳伤害较低
-      'cross': 12,     // 交叉拳中等伤害
-      'hook': 15,      // 勾拳较高伤害
-      'uppercut': 20   // 上勾拳最高伤害
-    }
-    return damages[attackType] || 10
+    // 限制移动范围
+    character.x = Math.max(-100, Math.min(100, character.x + deltaX))
+    character.y = Math.max(-100, Math.min(100, character.y + deltaY))
   }
 
   // 获取游戏状态
@@ -362,28 +226,27 @@ export class GameLogicService {
     return { ...this.gameState }
   }
 
-  // 获取玩家状态
-  getPlayer(playerIndex: number): Player {
-    if (playerIndex >= 0 && playerIndex < this.gameState.players.length) {
-      return { ...this.gameState.players[playerIndex] }
+  // 获取角色状态
+  getCharacter(characterIndex: number): Character {
+    if (characterIndex >= 0 && characterIndex < this.gameState.characters.length) {
+      return { ...this.gameState.characters[characterIndex] }
     }
-    // 返回默认玩家状态
+    // 返回默认角色状态
     return {
       id: 'unknown',
       name: 'Unknown',
-      health: 0,
-      score: 0,
+      x: 0,
+      y: 0,
       action: 'idle',
-      isBlocking: false,
-      comboCount: 0,
-      lastActionTime: 0
+      lastActionTime: 0,
+      isJumping: false,
+      jumpStartTime: 0
     }
   }
 
   // 清理资源
   dispose(): void {
-    this.stopRoundTimer()
-    this.stopAI()
+    this.stopGameLoop()
     this.eventListeners.clear()
   }
 }

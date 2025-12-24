@@ -15,13 +15,15 @@ export interface GestureResult {
   landmarks: HandLandmarks
 }
 
-export enum BoxingGestures {
-  JAB = 'jab',           // 直拳
-  CROSS = 'cross',        // 交叉拳
-  HOOK = 'hook',          // 勾拳
-  UPPERcut = 'uppercut',  // 上勾拳
-  BLOCK = 'block',        // 格挡
-  IDLE = 'idle'           // 空闲
+export enum FingerGestures {
+  THUMB_UP = 'thumb_up',     // 拇指向上 - 向上移动
+  INDEX_UP = 'index_up',     // 食指向上 - 向前移动
+  MIDDLE_UP = 'middle_up',   // 中指向上 - 向后移动
+  RING_UP = 'ring_up',       // 无名指向上 - 向左移动
+  PINKY_UP = 'pinky_up',     // 小指向上 - 向右移动
+  FIST = 'fist',             // 握拳 - 停止
+  OPEN_PALM = 'open_palm',   // 张开手掌 - 跳跃
+  IDLE = 'idle'              // 空闲
 }
 
 export class GestureRecognitionService {
@@ -85,7 +87,7 @@ export class GestureRecognitionService {
 
       for (let i = 0; i < results.multiHandLandmarks.length; i++) {
         const landmarks = results.multiHandLandmarks[i]
-        const gesture = this.classifyBoxingGesture(landmarks)
+        const gesture = this.classifyFingerGesture(landmarks)
         const confidence = this.calculateGestureConfidence(landmarks, gesture)
 
         gestureResults.push({
@@ -102,44 +104,63 @@ export class GestureRecognitionService {
     }
   }
 
-  private classifyBoxingGesture(landmarks: any): string {
-    // 简化的拳击手势分类逻辑
-    // 基于手部关键点的相对位置进行分类
+  private classifyFingerGesture(landmarks: any): string {
+    // 基于5个手指单独检测的手势识别逻辑
 
-    const wrist = landmarks[0]
+    // 获取每个手指的伸展状态
+    const fingerStates = this.getFingerStates(landmarks)
 
-    // 计算手指的伸展程度
-    const fingersExtended = [
-      this.isFingerExtended(wrist, landmarks[5], landmarks[8]),  // 食指
-      this.isFingerExtended(wrist, landmarks[9], landmarks[12]), // 中指
-      this.isFingerExtended(wrist, landmarks[13], landmarks[16]), // 无名指
-      this.isFingerExtended(wrist, landmarks[17], landmarks[20])  // 小指
-    ]
-
-    const extendedCount = fingersExtended.filter(Boolean).length
-
-    // 计算手的方向（用于区分不同类型的拳击动作）
-    const handDirection = this.getHandDirection(landmarks)
-
-    // 拳击手势分类逻辑
-    if (extendedCount === 0) {
-      // 所有手指都弯曲 - 可能是握拳
-      if (handDirection.vertical > 0.3) {
-        return BoxingGestures.UPPERcut // 上勾拳
-      } else if (Math.abs(handDirection.horizontal) > 0.3) {
-        return BoxingGestures.HOOK // 勾拳
-      } else {
-        return BoxingGestures.CROSS // 交叉拳或直拳
-      }
-    } else if (extendedCount === 1 && fingersExtended[0]) {
-      // 只有食指伸出 - 可能是直拳准备姿势或点拳
-      return BoxingGestures.JAB
-    } else if (extendedCount >= 2) {
-      // 多个手指伸出 - 可能是格挡姿势
-      return BoxingGestures.BLOCK
+    // 检测单个手指伸展（优先级从拇指到小指）
+    if (fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
+      return FingerGestures.THUMB_UP // 只有拇指伸出 - 向上移动
     }
 
-    return BoxingGestures.IDLE
+    if (fingerStates.indexExtended && !fingerStates.thumbExtended && !fingerStates.middleExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
+      return FingerGestures.INDEX_UP // 只有食指伸出 - 向前移动
+    }
+
+    if (fingerStates.middleExtended && !fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
+      return FingerGestures.MIDDLE_UP // 只有中指伸出 - 向后移动
+    }
+
+    if (fingerStates.ringExtended && !fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.pinkyExtended) {
+      return FingerGestures.RING_UP // 只有无名指伸出 - 向左移动
+    }
+
+    if (fingerStates.pinkyExtended && !fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.ringExtended) {
+      return FingerGestures.PINKY_UP // 只有小指伸出 - 向右移动
+    }
+
+    // 检测握拳（所有手指都弯曲）
+    if (!fingerStates.thumbExtended && !fingerStates.indexExtended && !fingerStates.middleExtended && !fingerStates.ringExtended && !fingerStates.pinkyExtended) {
+      return FingerGestures.FIST // 握拳 - 停止
+    }
+
+    // 检测张开手掌（大部分手指伸出）
+    const extendedCount = Object.values(fingerStates).filter(Boolean).length
+    if (extendedCount >= 4) {
+      return FingerGestures.OPEN_PALM // 张开手掌 - 跳跃
+    }
+
+    return FingerGestures.IDLE // 其他情况 - 空闲
+  }
+
+  private getFingerStates(landmarks: any): {
+    thumbExtended: boolean
+    indexExtended: boolean
+    middleExtended: boolean
+    ringExtended: boolean
+    pinkyExtended: boolean
+  } {
+    const wrist = landmarks[0]
+
+    return {
+      thumbExtended: this.isFingerExtended(wrist, landmarks[1], landmarks[4]),  // 拇指
+      indexExtended: this.isFingerExtended(wrist, landmarks[5], landmarks[8]),  // 食指
+      middleExtended: this.isFingerExtended(wrist, landmarks[9], landmarks[12]), // 中指
+      ringExtended: this.isFingerExtended(wrist, landmarks[13], landmarks[16]), // 无名指
+      pinkyExtended: this.isFingerExtended(wrist, landmarks[17], landmarks[20])  // 小指
+    }
   }
 
   private isFingerExtended(wrist: any, fingerBase: any, fingerTip: any): boolean {
@@ -164,10 +185,40 @@ export class GestureRecognitionService {
     }
   }
 
-  private calculateGestureConfidence(_landmarks: any, _gesture: string): number {
-    // 简化的置信度计算
-    // 在实际应用中，应该基于机器学习模型的输出
-    return 0.8 // 临时返回固定值
+  private calculateGestureConfidence(landmarks: any, gesture: string): number {
+    // 基于手指状态计算置信度
+    const fingerStates = this.getFingerStates(landmarks)
+    const extendedCount = Object.values(fingerStates).filter(Boolean).length
+
+    let confidence = 0.5 // 基础置信度
+
+    switch (gesture) {
+      case FingerGestures.THUMB_UP:
+        confidence = fingerStates.thumbExtended && extendedCount === 1 ? 0.9 : 0.3
+        break
+      case FingerGestures.INDEX_UP:
+        confidence = fingerStates.indexExtended && extendedCount === 1 ? 0.9 : 0.3
+        break
+      case FingerGestures.MIDDLE_UP:
+        confidence = fingerStates.middleExtended && extendedCount === 1 ? 0.9 : 0.3
+        break
+      case FingerGestures.RING_UP:
+        confidence = fingerStates.ringExtended && extendedCount === 1 ? 0.9 : 0.3
+        break
+      case FingerGestures.PINKY_UP:
+        confidence = fingerStates.pinkyExtended && extendedCount === 1 ? 0.9 : 0.3
+        break
+      case FingerGestures.FIST:
+        confidence = extendedCount === 0 ? 0.95 : 0.2
+        break
+      case FingerGestures.OPEN_PALM:
+        confidence = extendedCount >= 4 ? 0.85 : 0.3
+        break
+      default:
+        confidence = 0.1
+    }
+
+    return Math.max(0.1, Math.min(1.0, confidence))
   }
 
   private convertLandmarks(landmarks: any): HandLandmarks {
