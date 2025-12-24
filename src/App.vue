@@ -240,6 +240,7 @@ const toggleFullscreen = () => {
   }
 }
 
+
 const handleFullscreenChange = () => {
   const doc = document as any
   isFullscreen.value = !!(
@@ -304,7 +305,7 @@ const getGestureIcon = (gesture: string): string => {
       >
         <span class="fullscreen-icon">{{ isFullscreen ? '⛶' : '⛶' }}</span>
       </button>
-  </div>
+    </div>
 
     <!-- 悬浮控制面板 -->
     <div class="floating-panel" :class="{ 'visible': showControls && isFullscreen }">
@@ -319,25 +320,29 @@ const getGestureIcon = (gesture: string): string => {
       </div>
     </div>
 
-    <header class="app-header" :class="{ 'hidden': isFullscreen && !showControls }">
+    <!-- 简洁头部 -->
+    <header class="app-header">
       <div class="header-content">
-        <div class="logo-section">
-          <div class="logo">
-            <span class="logo-icon">🥊</span>
-            <span class="logo-text">拳击大师</span>
-          </div>
+        <div class="logo">
+          <span class="logo-icon">🥊</span>
+          <span class="logo-text">拳击大师</span>
         </div>
-        <h1 class="title">手指控制系统</h1>
-        <div class="status-section">
-          <div class="status-item">
-            <span class="status-label">状态:</span>
-            <span class="status-value" :class="{ 'ready': isInitialized }">{{ isInitialized ? '就绪' : '初始化中...' }}</span>
+
+        <div class="game-info">
+          <div class="status-section">
+            <div class="status-item">
+              <span class="status-label">状态</span>
+              <span class="status-value" :class="{ ready: isInitialized }">
+                {{ isInitialized ? '就绪' : '初始化中...' }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </header>
 
-  <main class="app-main" :class="{ 'fullscreen-main': isFullscreen }">
+    <!-- 游戏主界面 -->
+    <main class="app-main" :class="{ 'fullscreen-main': isFullscreen }">
     <div class="control-section" :class="{ 'hidden': isFullscreen && !showControls }">
       <!-- 模式切换卡片 -->
       <div class="mode-card">
@@ -349,7 +354,7 @@ const getGestureIcon = (gesture: string): string => {
             :class="{ active: !isMultiplayerMode }"
           >
             <div class="mode-icon">🤖</div>
-            <div class="mode-text">单人控制</div>
+            <div class="mode-text">单人</div>
           </button>
           <button
             @click="toggleMode"
@@ -357,8 +362,43 @@ const getGestureIcon = (gesture: string): string => {
             :class="{ active: isMultiplayerMode }"
           >
             <div class="mode-icon">👥</div>
-            <div class="mode-text">双人控制</div>
+            <div class="mode-text">双人</div>
           </button>
+        </div>
+      </div>
+
+      <!-- 操作指南卡片 -->
+      <div class="guide-card">
+        <h3 class="card-title">📋 操作指南</h3>
+        <div class="gesture-guide">
+          <div class="gesture-row">
+            <span class="gesture-icon">👍</span>
+            <span class="gesture-desc">向上</span>
+          </div>
+          <div class="gesture-row">
+            <span class="gesture-icon">☝️</span>
+            <span class="gesture-desc">向前</span>
+          </div>
+          <div class="gesture-row">
+            <span class="gesture-icon">🖕</span>
+            <span class="gesture-desc">向后</span>
+          </div>
+          <div class="gesture-row">
+            <span class="gesture-icon">🖖</span>
+            <span class="gesture-desc">向左</span>
+          </div>
+          <div class="gesture-row">
+            <span class="gesture-icon">🖐️</span>
+            <span class="gesture-desc">向右</span>
+          </div>
+          <div class="gesture-row">
+            <span class="gesture-icon">✊</span>
+            <span class="gesture-desc">停止</span>
+          </div>
+          <div class="gesture-row special">
+            <span class="gesture-icon">🖐️</span>
+            <span class="gesture-desc">跳跃</span>
+          </div>
         </div>
       </div>
 
@@ -559,18 +599,36 @@ const getGestureIcon = (gesture: string): string => {
   }
 }
 
-/* ===== 苹果风格主容器 - 极简优雅 ===== */
+/* ===== 全局样式 ===== */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  line-height: 1.4;
+  color: #1d1d1f;
+  background: #ffffff;
+}
+
+/* ===== 游戏界面主容器 ===== */
 .app {
   min-height: 100vh;
   background: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: inherit;
   transition: all 0.3s ease;
   position: relative;
   overflow-x: hidden;
-  line-height: 1.4;
-  color: #1d1d1f;
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 动态背景粒子效果 */
@@ -738,14 +796,14 @@ const getGestureIcon = (gesture: string): string => {
 
 /* ===== 苹果风格头部 - 简洁优雅 ===== */
 .app-header {
-  padding: 20px 0;
-  background: rgba(255, 255, 255, 0.8);
+  padding: 12px 0;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   color: #1d1d1f;
 }
 
@@ -852,22 +910,24 @@ const getGestureIcon = (gesture: string): string => {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
-/* ===== 苹果风格主内容 - 优雅布局 ===== */
+/* ===== 紧凑游戏主界面 ===== */
 .app-main {
+  flex: 1;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 80px 40px;
+  padding: 20px;
   display: grid;
-  grid-template-columns: 480px 1fr;
-  gap: 80px;
+  grid-template-columns: 400px 1fr;
+  gap: 24px;
   transition: all 0.3s ease;
   align-items: start;
+  width: 100%;
 }
 
 .app-main.fullscreen-main {
-  padding: 40px;
-  grid-template-columns: 400px 1fr;
-  gap: 60px;
+  padding: 16px;
+  grid-template-columns: 350px 1fr;
+  gap: 20px;
 }
 
 /* ===== 控制区域 - 优雅分组 ===== */
@@ -883,12 +943,13 @@ const getGestureIcon = (gesture: string): string => {
   transform: translateX(-30px) scale(0.95);
 }
 
-/* ===== 苹果风格卡片系统 ===== */
+/* ===== 游戏卡片系统 ===== */
 .mode-card,
+.guide-card,
 .player-card,
 .status-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow:
     0 2px 10px rgba(0, 0, 0, 0.08),
@@ -1526,6 +1587,138 @@ const getGestureIcon = (gesture: string): string => {
   .fullscreen-controls {
     top: 12px;
     right: 12px;
+  }
+}
+
+
+
+/* ===== 操作指南样式 ===== */
+.gesture-guide {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gesture-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.gesture-row:hover {
+  background: rgba(0, 113, 227, 0.05);
+}
+
+.gesture-row.special {
+  background: rgba(0, 113, 227, 0.1);
+  border: 1px solid rgba(0, 113, 227, 0.2);
+}
+
+.gesture-row.special:hover {
+  background: rgba(0, 113, 227, 0.15);
+}
+
+.gesture-icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+.gesture-desc {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1d1d1f;
+  flex: 1;
+}
+
+.gesture-row.special .gesture-desc {
+  color: #0071e3;
+  font-weight: 600;
+}
+
+/* ===== 响应式设计 ===== */
+@media (max-width: 1024px) {
+  .app-main {
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .header-content {
+    padding: 0 16px;
+  }
+
+  .logo-text {
+    display: none;
+  }
+
+  .control-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .mode-card,
+  .guide-card {
+    margin-bottom: 0;
+  }
+
+  .gesture-guide {
+    gap: 6px;
+  }
+
+  .gesture-row {
+    padding: 4px 0;
+  }
+
+  .gesture-icon {
+    font-size: 18px;
+    width: 20px;
+  }
+
+  .gesture-desc {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-main {
+    padding: 8px;
+    gap: 12px;
+  }
+
+  .app-header {
+    padding: 8px 0;
+  }
+
+  .control-section {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .mode-card,
+  .guide-card {
+    padding: 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .gesture-guide {
+    gap: 4px;
   }
 }
 </style>
