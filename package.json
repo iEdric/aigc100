@@ -9,7 +9,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "vue": "^3.5.18"
+    "vue": "^3.5.18",
+    "@tensorflow/tfjs": "^4.15.0",
+    "@tensorflow-models/handpose": "^0.0.7",
+    "@mediapipe/hands": "^0.4.1675469240",
+    "three": "^0.158.0",
+    "element-plus": "^2.4.4",
+    "@element-plus/icons-vue": "^2.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
